@@ -1,0 +1,108 @@
+#***************************************************************#
+#** This file is part of ironha1l Tool Suite.                 **#
+#** ironha1l, a DFU injector tool for iDevices.               **#
+#**                                                           **#
+#** ********************************************************* **#
+#** --------------- Updated: Oct-10-2012 -------------------- **#
+#** ********************************************************* **#
+#**                                                           **#
+#** Author: Pascal CLEMENT aka Thireus <ironha1l@thireus.com> **#
+#**                                                           **#
+#** http://ironha1l.thireus.com                               **#
+#** http://blog.thireus.com                                   **#
+#**                                                           **#
+#** ironha1l Tool Suite,                                      **#
+#** Copyright © 2012  Thireus.                                **#
+#***************************************************************#
+#**PLEASE REFER TO THE README FILE FOR ADDITIONAL INFORMATION!**#
+#***************************************************************#
+
+PATH_libusb_ironha1l = $(BASEDIR)/libusb_ironha1l/libusb/.libs/
+PATH_usbmuxd_ironha1l = $(BASEDIR)/usbmuxd_ironha1l/build/
+PATH_common = $(BASEDIR)/common/
+PATH_libironha1l = $(BASEDIR)/libironha1l/
+PATH_applications = $(BASEDIR)/applications/
+PATH_limera1n = $(BASEDIR)/limera1n/
+
+LIBUSB_IRONHA1L_ = $(PATH_libusb_ironha1l)libusb-1.0
+USBMUXD_IRONHA1L_ = $(PATH_usbmuxd_ironha1l)
+LIBIRONHA1L_ = $(PATH_libironha1l)libironha1l
+LIMERA1N_ = $(PATH_limera1n)limera1n
+IRONHA1L_ = $(PATH_applications)ironha1l
+DEVICES_ = $(PATH_applications)devices
+COMMON_ = $(PATH_common)common
+
+LIBUSB_IRONHA1L = $(LIBUSB_IRONHA1L_).a
+USBMUXD_IRONHA1L = $(USBMUXD_IRONHA1L_)Makefile
+LIBIRONHA1L = $(LIBIRONHA1L_).a
+IRONHA1L = $(BASEDIR)/ironha1l
+DEVICES = $(BASEDIR)/devices
+USBMUXD = $(BASEDIR)/usbmuxd
+IPROXY = $(BASEDIR)/iproxy
+
+CC = gcc
+AR = ar
+
+ARFLAGS = rcs
+CFLAGS = -c -Wall -g
+
+LDFLAGS = -L$(PATH_libironha1l) -lironha1l
+LDFLAGSLIBUSB += -L$(PATH_libusb_ironha1l) -lusb-1.0
+
+all: $(IRONHA1L) $(DEVICES) $(USBMUXD) $(IPROXY)
+
+$(LIBUSB_IRONHA1L):
+	make -C $(BASEDIR)/libusb_ironha1l
+
+$(USBMUXD_IRONHA1L): $(LIBUSB_IRONHA1L)
+	cd $(BASEDIR)/usbmuxd_ironha1l/build \
+	&& cmake .. \
+	&& cd $(BASEDIR)
+
+$(USBMUXD): $(USBMUXD_IRONHA1L)
+	make -C $(BASEDIR)/usbmuxd_ironha1l/build usbmuxd\
+	&& mv $(BASEDIR)/usbmuxd_ironha1l/build/daemon/usbmuxd $(BASEDIR)/
+
+$(IPROXY): $(USBMUXD_IRONHA1L)
+	make -C $(BASEDIR)/usbmuxd_ironha1l/build iproxy \
+	&& mv $(BASEDIR)/usbmuxd_ironha1l/build/tools/iproxy $(BASEDIR)/
+
+$(LIBIRONHA1L): $(LIBIRONHA1L_).o
+	$(AR) $(ARFLAGS) $(LIBIRONHA1L) $(LIBIRONHA1L_).o
+
+$(LIBIRONHA1L_).o: $(LIBIRONHA1L_).c $(LIBIRONHA1L_).h
+	$(CC) $(CFLAGS) $(LIBIRONHA1L_).c -o $(LIBIRONHA1L_).o
+
+$(IRONHA1L): $(LIMERA1N_).o $(COMMON_).o $(IRONHA1L_).o $(LIBUSB_IRONHA1L) $(LIBIRONHA1L)
+	$(CC) $(LIMERA1N_).o $(COMMON_).o $(IRONHA1L_).o $(LDFLAGS) $(LDFLAGSLIBUSB) -o $(IRONHA1L)
+
+$(IRONHA1L_).o: $(IRONHA1L_).c $(IRONHA1L_).h $(LIBIRONHA1L_).h
+	$(CC) $(CFLAGS) $(IRONHA1L_).c -o $(IRONHA1L_).o
+
+$(DEVICES): $(DEVICES_).o $(COMMON_).o $(LIBUSB_IRONHA1L) $(LIBIRONHA1L)
+	$(CC) $(COMMON_).o $(DEVICES_).o $(LDFLAGS) $(LDFLAGSLIBUSB) -o $(DEVICES)
+
+$(DEVICES_).o: $(DEVICES_).c $(DEVICES_).h $(LIBIRONHA1L_).h
+	$(CC) $(CFLAGS) $(DEVICES_).c -o $(DEVICES_).o
+
+$(COMMON_).o: $(COMMON_).c $(COMMON_).h $(LIBIRONHA1L_).h
+	$(CC) $(CFLAGS) $(COMMON_).c -o $(COMMON_).o
+
+$(LIMERA1N_).o: $(LIMERA1N_).c $(LIMERA1N_).h $(LIBIRONHA1L_).h
+	$(CC) $(CFLAGS) $(LIMERA1N_).c -o $(LIMERA1N_).o
+
+clean:
+	rm -rf $(BASEDIR)/*.o
+	rm -rf $(BASEDIR)/*/*.o
+	make clean_usbmuxd
+	make clean_libusb
+	
+clean_libusb:
+	make -C $(BASEDIR)/libusb_ironha1l clean
+
+clean_usbmuxd:
+	rm -rf $(PATH_usbmuxd_ironha1l)*
+	
+mrproper:
+	rm -rf $(PATH_libusb_ironha1l) $(PATH_usbmuxd_ironha1l)* $(LIBIRONHA1L) $(IRONHA1L) $(DEVICES) $(USBMUXD) $(IPROXY)
+	make clean

@@ -1,0 +1,81 @@
+//***************************************************************//
+//** This file is part of ironha1l Tool Suite.                 **//
+//** ironha1l, a DFU injector tool for iDevices.               **//
+//**                                                           **//
+//** ********************************************************* **//
+//** --------------- Updated: Oct-10-2012 -------------------- **//
+//** ********************************************************* **//
+//**                                                           **//
+//** Author: Pascal CLEMENT aka Thireus <ironha1l@thireus.com> **//
+//**                                                           **//
+//** http://ironha1l.thireus.com                               **//
+//** http://blog.thireus.com                                   **//
+//**                                                           **//
+//** ironha1l Tool Suite,                                      **//
+//** Copyright © 2012  Thireus.                                **//
+//***************************************************************//
+//**PLEASE REFER TO THE README FILE FOR ADDITIONAL INFORMATION!**//
+//***************************************************************//
+
+*** FOR YOUR INFORMATION ***
+
+THIS FILE IS FOR INFORMATION PURPOSE ONLY.
+
+*** ABOUT THIS DIRECTORY ***
+
+ALL FILES LOCATED IN THIS DIRECTORY ARE PART OF ironha1l Tool Suite.
+
+These files and patches are required for the ironha1l ANROID version.
+
+*** NOTES ***
+
+http://android.serverbox.ch/?p=151
+
+RUN:
+
+cd external/libusb/
+./configure --host=arm-linux --disable-timerfd
+
+MacOS X:
+
+Error: /opt/local/include/dlfcn.h:41:32: error: AvailabilityMacros.h: No such file or directory
+
+sudo ln -s /usr/include/AvailabilityMacros.h /opt/local/include/.
+
+----- libusb 1.0.3+ specific errors:
+
+Problem: undefined reference to ‘TIMESPEC_TO_TIMEVAL’ 
+
+Solution: add in libusb-1.0.*/libusb/io.c
+
+#ifndef TIMESPEC_TO_TIMEVAL
+#define TIMESPEC_TO_TIMEVAL(tv, ts)                     \
+       do {                                             \
+               (tv)->tv_sec = (ts)->tv_sec;             \
+               (tv)->tv_usec = (ts)->tv_nsec / 1000;    \
+       } while(0)
+#endif /* end of TIMESPEC_TO_TIMEVAL */
+
+
+----- libusb 1.0.9 specific errors:
+
+Problem: error: 'LIBUSB_DESCRIBE' undeclared here (not in a function)
+
+Solution: add in external/libusb-1.0.9/libusb/core.c
+
+#define LIBUSB_DESCRIBE ""
+
+
+Problem: error: undefined reference to 'usbi_mutex_init_recursive'
+
+Solution:
+
+nano external/libusb-1.0.9/libusb/Android.mk
+ADD in LOCAL_SRC_FILES: os/threads_posix.c
+
+
+USBMUXD:
+
+mkdir build
+cd build
+cmake -DCMAKE_SYSTEM_NAME=Linux ..

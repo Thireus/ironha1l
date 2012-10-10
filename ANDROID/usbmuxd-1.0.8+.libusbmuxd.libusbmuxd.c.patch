@@ -1,0 +1,19 @@
+*** usbmuxd-1.0.8/libusbmuxd/libusbmuxd.c	2012-04-08 00:50:09.000000000 +0200
+--- usbmuxd_ironha1l/libusbmuxd/libusbmuxd.c	2012-07-31 10:54:30.000000000 +0200
+***************
+*** 660,666 ****
+  	}
+  #else
+  	if (pthread_kill(devmon, 0) == 0) {
+! 		pthread_cancel(devmon);
+  		pthread_join(devmon, NULL);
+  	}
+  #endif
+--- 660,666 ----
+  	}
+  #else
+  	if (pthread_kill(devmon, 0) == 0) {
+! 		//pthread_cancel(devmon);
+  		pthread_join(devmon, NULL);
+  	}
+  #endif

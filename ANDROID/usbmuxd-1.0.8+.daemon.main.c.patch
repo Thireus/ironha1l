@@ -1,0 +1,55 @@
+*** usbmuxd-1.0.8/daemon/main.c	2012-04-08 00:50:09.000000000 +0200
+--- usbmuxd_ironha1l/daemon/main.c	2012-07-31 10:49:02.000000000 +0200
+***************
+*** 47,54 ****
+  #include "device.h"
+  #include "client.h"
+  
+! static const char *socket_path = "/var/run/usbmuxd";
+! static const char *lockfile = "/var/run/usbmuxd.pid";
+  
+  int should_exit;
+  int should_discover;
+--- 47,54 ----
+  #include "device.h"
+  #include "client.h"
+  
+! static const char *socket_path = "/data/local/tmp/usbmuxd";
+! static const char *lockfile = "/data/local/tmp/usbmuxd.pid";
+  
+  int should_exit;
+  int should_discover;
+***************
+*** 147,153 ****
+  	sigaction(SIGUSR2, &sa, NULL);
+  }
+  
+! #if defined(__FreeBSD__) || defined(__APPLE__)
+  static int ppoll(struct pollfd *fds, nfds_t nfds, const struct timespec *timeout, const sigset_t *sigmask)
+  {
+  	int ready;
+--- 147,153 ----
+  	sigaction(SIGUSR2, &sa, NULL);
+  }
+  
+! //#if defined(__FreeBSD__) || defined(__APPLE__)
+  static int ppoll(struct pollfd *fds, nfds_t nfds, const struct timespec *timeout, const sigset_t *sigmask)
+  {
+  	int ready;
+***************
+*** 160,166 ****
+  
+  	return ready;
+  }
+! #endif
+  
+  int main_loop(int listenfd)
+  {
+--- 160,166 ----
+  
+  	return ready;
+  }
+! //#endif
+  
+  int main_loop(int listenfd)
+  {

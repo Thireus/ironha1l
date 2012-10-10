@@ -1,0 +1,19 @@
+*** libusb-1.0.9/libusb/io.c	2012-04-20 08:44:27.000000000 +0200
+--- libusb_ironha1l/libusb/io.c	2012-07-18 15:37:48.000000000 +0200
+***************
+*** 36,41 ****
+--- 36,49 ----
+  
+  #include "libusbi.h"
+  
++ #ifndef TIMESPEC_TO_TIMEVAL
++ #define TIMESPEC_TO_TIMEVAL(tv, ts)                     \
++        do {                                             \
++                (tv)->tv_sec = (ts)->tv_sec;             \
++                (tv)->tv_usec = (ts)->tv_nsec / 1000;    \
++        } while(0)
++ #endif /* end of TIMESPEC_TO_TIMEVAL */
++ 
+  /**
+   * \page io Synchronous and asynchronous device I/O
+   *

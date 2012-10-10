@@ -1,0 +1,53 @@
+//***************************************************************//
+//** This file is part of ironha1l Tool Suite.                 **//
+//** ironha1l, a DFU injector tool for iDevices.               **//
+//**                                                           **//
+//** ********************************************************* **//
+//** --------------- Updated: Oct-10-2012 -------------------- **//
+//** ********************************************************* **//
+//**                                                           **//
+//** Author: Pascal CLEMENT aka Thireus <ironha1l@thireus.com> **//
+//**                                                           **//
+//** http://ironha1l.thireus.com                               **//
+//** http://blog.thireus.com                                   **//
+//**                                                           **//
+//** ironha1l Tool Suite,                                      **//
+//** Copyright © 2012  Thireus.                                **//
+//***************************************************************//
+//**PLEASE REFER TO THE README FILE FOR ADDITIONAL INFORMATION!**//
+//***************************************************************//
+
+*** FOR YOUR INFORMATION ***
+
+This version of ironha1l is distributed under the terms of GPLv3.
+
+*** INSTALLATION ***
+
+PLEASE READ THE INSTALL FILE!
+
+*** AUTHORS ***
+
+PLEASE READ THE AUTHORS FILE!
+
+*** CONTRIBUTE ***
+
+If you wish to contribute to this project please refer to the
+ironha1l website: http://ironha1l.thireus.com
+
+*** LICENSE ***
+
+ironha1l, a DFU injector tool for iDevices.
+Copyright (C) 2012  Thireus
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.

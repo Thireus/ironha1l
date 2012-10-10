@@ -1,0 +1,56 @@
+//***************************************************************//
+//** This file is part of ironha1l Tool Suite.                 **//
+//** ironha1l, a DFU injector tool for iDevices.               **//
+//**                                                           **//
+//** ********************************************************* **//
+//** --------------- Updated: Oct-10-2012 -------------------- **//
+//** ********************************************************* **//
+//**                                                           **//
+//** Author: Pascal CLEMENT aka Thireus <ironha1l@thireus.com> **//
+//**                                                           **//
+//** http://ironha1l.thireus.com                               **//
+//** http://blog.thireus.com                                   **//
+//**                                                           **//
+//** ironha1l Tool Suite,                                      **//
+//** Copyright © 2012  Thireus.                                **//
+//***************************************************************//
+//**PLEASE REFER TO THE README FILE FOR ADDITIONAL INFORMATION!**//
+//***************************************************************//
+
+*** BEFORE YOU START ***
+
+A working Internet connexion qui required by the configure script
+to fetch additionnal tools.
+
+*** UNIX/LINUX/MacOS/FreeBSD ***
+
+./configure
+make ironha1l usbmuxd iproxy devices
+
+Note: You can face some basic issues with libusb, especially if
+libusb is already installed on the operating system. In this case
+you must manually install the compiled version of libusb_ironha1l.
+
+*** ANDROID ***
+
+1. Put the ironha1l directory into your external/ folder of Android 4.x
+   WORKING_DIRECTORY source.
+   
+2. Configure ironha1l for ANDROID
+   
+   ./configure ANDROID
+   
+3. Compile from your Android WORKING_DIRECTORY root directory.
+   
+   make ironha1l usbmuxd iproxy devices
+   
+4. Use adb of scp to upload files to a PATH bin directory of your Android
+   phone.
+
+*** ADDITIONAL NOTES ****
+
+You can also compile each tools provided by ironha1l Tool Suite separately.
+
+For example, if you only need ironha1 but not devices:
+
+   make ironha1l

@@ -1,0 +1,179 @@
+#***************************************************************#
+#** This file is part of ironha1l Tool Suite.                 **#
+#** ironha1l, a DFU injector tool for iDevices.               **#
+#**                                                           **#
+#** ********************************************************* **#
+#** --------------- Updated: Oct-10-2012 -------------------- **#
+#** ********************************************************* **#
+#**                                                           **#
+#** Author: Pascal CLEMENT aka Thireus <ironha1l@thireus.com> **#
+#**                                                           **#
+#** http://ironha1l.thireus.com                               **#
+#** http://blog.thireus.com                                   **#
+#**                                                           **#
+#** ironha1l Tool Suite,                                      **#
+#** Copyright © 2012  Thireus.                                **#
+#***************************************************************#
+#**PLEASE REFER TO THE README FILE FOR ADDITIONAL INFORMATION!**#
+#***************************************************************#
+
+#!/bin/sh
+
+libusb="libusb-1.0.9" #libusb version to download
+usbmuxd="usbmuxd-1.0.8" #usbmuxd version to download
+
+if [[ $1 == "android" || $1 == "ANDROID" ]]; then
+  platform="ANDROID"
+else
+  platform=$(uname)
+fi
+
+createmakefile=1
+dir=$(dirname $0)
+cur_dir=$(pwd)
+
+echo "Welcome on ironha1l configuration script."
+echo ""
+
+if [[ "$platform" == "Linux" ]]; then
+	echo "[X] Linux platform detected!"
+	FLAGS="LDFLAGSLIBUSB = # Linux"
+elif [[ "$platform" == "Darwin" ]]; then
+	echo "[X] Darwin platform detected!"
+	FLAGS="LDFLAGSLIBUSB = # MacOS"
+elif [[ "$platform" == "OpenBSD" ]]; then
+	echo "[X] OpenBSD platform detected!"
+	FLAGS="LDFLAGSLIBUSB = -pthread # OpenBSD"
+elif [[ "$platform" == "ANDROID" ]]; then
+	echo "[X] ANDROID platform detected!"
+else
+	echo "[-] Sorry but your platform is not supported."
+	createmakefile=0
+fi
+
+if [[ $createmakefile == 0 ]]; then
+	exit
+fi
+
+if [[ "$platform" != "ANDROID" ]]; then
+	echo "[X] Creating Makefile"
+	echo "$FLAGS" > $dir/Makefile
+	echo "BASEDIR = $dir" >> $dir/Makefile
+	echo "" >> $dir/Makefile
+	echo "include $dir/Makefile.default" >> $dir/Makefile
+else
+	echo "[X] You should read ANDROID/README file!"
+fi
+
+######## libusb START ########
+echo ""
+echo "[X] Checking libusb..."
+
+echo ""
+if ! [ -d $dir/tmp ]; then
+  echo "[X] Creating tmp directory..."
+  mkdir $dir/tmp
+fi
+
+echo ""
+if [ -f $dir/tmp/$libusb.tar.bz2 ]; then
+  echo "[X] $libusb.tar.bz2 FOUND! Skipping download."
+else
+  echo "[X] Downloading libusb."
+  wget -O $dir/tmp/$libusb.tar.bz2 --tries=3 http://sourceforge.net/projects/libusb/files/libusb-1.0/$libusb/$libusb.tar.bz2/download
+fi
+
+echo ""
+echo "[X] Extracting $libusb.tar.bz2"
+cd $dir/tmp/
+tar jvxf $libusb.tar.bz2
+
+cd $cur_dir
+rm -rf $dir/libusb_ironha1l
+mv $dir/tmp/$libusb $dir/libusb_ironha1l
+
+cd $cur_dir
+echo ""
+if [[ "$platform" == "ANDROID" ]]; then
+	echo "[X] Creating Android.mk files for libusb."
+	cp -f $dir/ANDROID/Android.__ROOT_LIBUSB_IRONHA1L__.mk $dir/libusb_ironha1l/Android.mk
+	cp -f $dir/ANDROID/Android.libusb.mk $dir/libusb_ironha1l/libusb/Android.mk
+	echo ""
+	echo "[X] Patching libusb."
+	cd $cur_dir
+	patch $dir/libusb_ironha1l/libusb/io.c < $dir/ANDROID/libusb-1.0.3+.libusb.io.c.patch
+	patch $dir/libusb_ironha1l/libusb/core.c < $dir/ANDROID/libusb-1.0.9+.libusb.core.c.patch
+	echo ""
+	echo "[X] Configuring libusb."
+	cd $dir/libusb_ironha1l
+	./configure --enable-static --host=arm-linux --disable-timerfd
+else
+	echo "[X] Configuring libusb."
+	cd $dir/libusb_ironha1l
+	./configure --enable-static
+fi
+
+cd $cur_dir
+######## libusb END ########
+
+######## usbmuxd START ########
+echo ""
+echo "[X] Checking usbmuxd..."
+
+echo ""
+if ! [ -d $dir/tmp ]; then
+  echo "[X] Creating tmp directory..."
+  mkdir $dir/tmp
+fi
+
+echo ""
+if [ -f $dir/tmp/$usbmuxd.tar.gz ]; then
+  echo "[X] $usbmuxd.tar.gz FOUND! Skipping download."
+else
+  echo "[X] Downloading usbmuxd."
+  wget -O $dir/tmp/$usbmuxd.tar.gz --tries=3 http://cgit.sukimashita.com/usbmuxd.git/snapshot/$usbmuxd.tar.gz
+fi
+
+echo ""
+echo "[X] Extracting $usbmuxd.tar.gz"
+cd $dir/tmp/
+tar zvxf $usbmuxd.tar.gz
+
+cd $cur_dir
+rm -rf $dir/usbmuxd_ironha1l
+mv $dir/tmp/$usbmuxd $dir/usbmuxd_ironha1l
+
+cd $cur_dir
+echo ""
+if [[ "$platform" == "ANDROID" ]]; then
+	echo "[X] Creating Android.mk file for usbmuxd."
+	cp -f $dir/ANDROID/Android.__ROOT_USBMUXD_IRONHA1L__.mk $dir/usbmuxd_ironha1l/Android.mk
+	echo ""
+	echo "[X] Patching usbmuxd."
+	cd $cur_dir
+	patch $dir/usbmuxd_ironha1l/libusbmuxd/usbmuxd-proto.h < $dir/ANDROID/usbmuxd-1.0.8+.libusbmuxd.usbmuxd-proto.h.patch
+	patch $dir/usbmuxd_ironha1l/libusbmuxd/libusbmuxd.c < $dir/ANDROID/usbmuxd-1.0.8+.libusbmuxd.libusbmuxd.c.patch
+	patch $dir/usbmuxd_ironha1l/daemon/usb-linux.c < $dir/GENERIC/usbmuxd-1.0.8.daemon.usb-linux.c.patch
+	patch $dir/usbmuxd_ironha1l/daemon/client.h < $dir/ANDROID/usbmuxd-1.0.8+.daemon.client.h.patch
+	patch $dir/usbmuxd_ironha1l/daemon/device.c < $dir/ANDROID/usbmuxd-1.0.8+.daemon.device.c.patch
+	patch $dir/usbmuxd_ironha1l/daemon/main.c < $dir/ANDROID/usbmuxd-1.0.8+.daemon.main.c.patch
+else
+	echo ""
+	echo "[X] Patching usbmuxd."
+	cd $cur_dir
+	patch $dir/usbmuxd_ironha1l/Modules/FindUSB.cmake < $dir/GENERIC/usbmuxd-1.0.8.Modules.FindUSB.cmake.patch
+	patch $dir/usbmuxd_ironha1l/daemon/usb-linux.c < $dir/GENERIC/usbmuxd-1.0.8.daemon.usb-linux.c.patch
+	echo ""
+	echo "[X] Creating usbmuxd build directory."
+	mkdir $dir/usbmuxd_ironha1l/build
+fi
+
+cd $cur_dir
+######## usbmuxd END ########
+
+echo ""
+if [[ "$platform" == "ANDROID" ]]; then
+	echo "[X] DONE! You can now run 'make ironha1l devices usbmuxd iproxy' directly from your WORKING_DIRECTORY."
+else
+	echo "[X] DONE! You can now run 'make'."
+fi
