@@ -44,7 +44,7 @@ you must manually install the compiled version of libusb_ironha1l.
    
    make ironha1l usbmuxd iproxy devices
    
-4. Use adb of scp to upload files to a PATH bin directory of your Android
+4. Use adb or scp to upload files to a PATH bin directory of your Android
    phone.
 
 *** ADDITIONAL NOTES ****
